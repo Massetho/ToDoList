@@ -30,7 +30,7 @@ class TaskController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-
+            $comment->setUser($this->getUser())->setDateCreated(new \DateTime());
             $em->persist($task);
             $em->flush();
 
