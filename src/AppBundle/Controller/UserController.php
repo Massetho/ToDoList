@@ -32,6 +32,8 @@ class UserController extends Controller
             $em = $this->getDoctrine()->getManager();
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+            if($user->isAdmin())
+                $user->setRoles(array('ROLE_ADMIN'));
 
             $em->persist($user);
             $em->flush();
@@ -50,12 +52,19 @@ class UserController extends Controller
     public function editAction(User $user, Request $request)
     {
         $form = $this->createForm(UserType::class, $user);
+        if (in_array('ROLE_ADMIN', $user->getRoles()))
+            $form->get('isAdmin')->setData(true);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
+
+            if($user->isAdmin())
+                $user->setRoles(array('ROLE_ADMIN'));
+            else
+                $user->setRoles(array('ROLE_USER'));
 
             $this->getDoctrine()->getManager()->flush();
 
