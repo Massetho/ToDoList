@@ -1,0 +1,74 @@
+<?php
+/**
+ * @description :
+ * @package : PhpStorm.
+ * @Author : quent
+ * @date: 16/07/2018
+ * @time: 15:44
+ */
+
+namespace App\Tests\Form;
+
+use AppBundle\Entity\Task;
+use AppBundle\Entity\User;
+use AppBundle\Form\TaskType;
+use AppBundle\Form\UserType;
+use Symfony\Component\Form\Test\TypeTestCase;
+use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
+use Symfony\Component\Form\Form;
+use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+class TaskTypeTest extends TypeTestCase
+{
+    private $validator;
+
+    protected function getExtensions()
+    {
+        $this->validator = $this->createMock(ValidatorInterface::class);
+        $this->validator
+            ->method('validate')
+            ->will($this->returnValue(new ConstraintViolationList()));
+        $this->validator
+            ->method('getMetadataFor')
+            ->will($this->returnValue(new ClassMetadata(Form::class)));
+
+        return array(
+            new ValidatorExtension($this->validator),
+        );
+    }
+
+    public function testTaskSubmitValidData()
+    {
+        $formData = array(
+            'title' => 'Test',
+            'content' => 'test content'
+        );
+
+        $objectToCompare = new Task();
+        // $objectToCompare will retrieve data from the form submission; pass it as the second argument
+        $form = $this->factory->create(TaskType::class, $objectToCompare);
+
+        $object = new Task();
+        // ...populate $object properties with the data stored in $formData
+        $object->setTitle($formData['title']);
+        $object->setContent($formData['content']);
+
+
+        // submit the data to the form directly
+        $form->submit($formData);
+
+        $this->assertTrue($form->isSynchronized());
+
+        // check that $objectToCompare was modified as expected when the form was submitted
+        //$this->assertEquals($object, $objectToCompare);
+
+        $view = $form->createView();
+        $children = $view->children;
+
+        foreach (array_keys($formData) as $key) {
+            $this->assertArrayHasKey($key, $children);
+        }
+    }
+}
