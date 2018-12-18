@@ -19,6 +19,8 @@ class TaskController extends Controller
     }
 
     /**
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      * @Route("/tasks/create", name="task_create")
      */
     public function createAction(Request $request)
@@ -28,7 +30,7 @@ class TaskController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $task->setUser($this->getUser());
             $em->persist($task);
@@ -43,6 +45,9 @@ class TaskController extends Controller
     }
 
     /**
+     * @param Task $task
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
      * @Route("/tasks/{id}/edit", name="task_edit")
      */
     public function editAction(Task $task, Request $request)
@@ -51,7 +56,7 @@ class TaskController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash('success', 'La tâche a bien été modifiée.');
@@ -66,6 +71,8 @@ class TaskController extends Controller
     }
 
     /**
+     * @param Task $task
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @Route("/tasks/{id}/toggle", name="task_toggle")
      */
     public function toggleTaskAction(Task $task)
@@ -79,6 +86,8 @@ class TaskController extends Controller
     }
 
     /**
+     * @param Task $task
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @Route("/tasks/{id}/delete", name="task_delete")
      */
     public function deleteTaskAction(Task $task)

@@ -7,6 +7,7 @@ use AppBundle\Form\UserType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserController extends Controller
 {
@@ -21,16 +22,16 @@ class UserController extends Controller
     /**
      * @Route("/users/create", name="user_create")
      */
-    public function createAction(Request $request)
+    public function createAction(Request $request, UserPasswordEncoderInterface $encoder)
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+            $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
             if($user->isAdmin())
                 $user->setRoles(array('ROLE_ADMIN'));
@@ -49,7 +50,7 @@ class UserController extends Controller
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
-    public function editAction(User $user, Request $request)
+    public function editAction(User $user, Request $request, UserPasswordEncoderInterface $encoder)
     {
         $form = $this->createForm(UserType::class, $user);
         if (in_array('ROLE_ADMIN', $user->getRoles()))
@@ -57,8 +58,8 @@ class UserController extends Controller
 
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
-            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $encoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
 
             if($user->isAdmin())
