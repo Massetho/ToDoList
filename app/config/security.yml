@@ -26,7 +26,7 @@ security:
                 default_target_path:  /
             logout:
                 path:   /logout
-                target: /
+                target: /login
             logout_on_user_change: true
 
     access_control:
