@@ -20,7 +20,13 @@ Configure a *DATABASE_URL* constant, at the web server level, as explained [here
 ```dotenv
 DATABASE_URL=mysql://[db_user]:[password]@[IPaddress]:[port]/[db_name]
 ```
-  
+
+Set up your database :
+```php
+$ php bin/console make:migration
+$ php bin/console doctrine:migrations:migrate
+```
+ 
 ## Built with
   - [Symfony](https://symfony.com/) - PHP framework
   - [Composer](https://getcomposer.org/) - Dependency management
