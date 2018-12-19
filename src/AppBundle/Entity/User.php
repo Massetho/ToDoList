@@ -12,6 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table("user_todolist")
  * @ORM\Entity
  * @UniqueEntity("email")
+ * @UniqueEntity("username")
  */
 class User implements UserInterface
 {
@@ -30,6 +31,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank(message="Vous devez saisir un mot de passe.")
      */
     private $password;
 
